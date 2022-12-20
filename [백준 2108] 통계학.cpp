@@ -4,47 +4,49 @@
 #include <cmath>
 using namespace std;
 
+int cnt[8001]; // -4000~4000
+double sum;
+
 int main() {
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL); cout.tie(NULL);
-	
-	vector <int> v1;
-	vector <int> v2(8001, 0);
 	int n; cin >> n;
-	int sum = 0;
-	for (int i = 0; i < n;++i) {
+
+	vector <int> v;
+	for (int i = 0; i < n; ++i) {
 		int tmp; cin >> tmp;
 		sum += tmp;
-		v1.push_back(tmp);
-		v2[tmp + 4000]++;
+		v.push_back(tmp);
+		cnt[tmp+4000]++;
 	}
-	sort(v1.begin(), v1.end());
+	sort(v.begin(), v.end());
 
-	// Æò±Õ
-	int avg = round((float)sum / n);
+	// »ê¼úÆò±Õ
+	int avg = round(sum / n);
 	if (avg == -0) cout << 0 << '\n';
 	else cout << avg << '\n';
 
 	// Áß¾Ó°ª
 	int middle = round(n / 2);
-	cout << v1[middle] << '\n';
+	cout << v[middle] << '\n';
 
 	// ÃÖºó°ª
-	int m = 0;
-	vector <int> v3;
-	for (int i = 0; i < 8001; ++i) {
-		if (v2[i] > v2[m]) { m = i; v3.clear(); v3.push_back(i); }
-		else if (v2[i] == v2[m]) { v3.push_back(i); }
+	vector <int> k;
+	int num = 0;
+	for (int i = 0; i < n; ++i) {
+		if (cnt[v[i]+4000] > num) {
+			k.clear();
+			k.push_back(v[i]);
+			num = cnt[v[i]+4000];
+		}
+		else if (cnt[v[i]+4000] == num) {
+			k.push_back(v[i]);
+		}
 	}
-	
-	if (v3.size() == 1) cout << v3[0]-4000 << '\n';
-	else {
-		sort(v3.begin(), v3.end());
-		cout << v3[1]-4000 << '\n';
-	}
+	sort(k.begin(), k.end());
+	k.erase(unique(k.begin(), k.end()), k.end());
+
+	if (k.size() >= 2) cout << k[1] << '\n';
+	else cout << k[0] << '\n';
 
 	// ¹üÀ§
-	cout << v1.back() - v1.front() << '\n';
-
-	return 0;
+	cout << v[n - 1] - v[0] << '\n';
 }
