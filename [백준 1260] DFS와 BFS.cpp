@@ -1,58 +1,65 @@
 #include <iostream>
 #include <vector>
-#include <queue>
 #include <algorithm>
+#include <queue>
 using namespace std;
 
-int n, m, v;
-int visited1[1001];
-int visited2[1001];
-vector <int> connection[1001];
-queue <int> q;
-int dist[1001];
+struct node 
+{
+	int num;
+	vector<int> link;
+	int isVisited_forDFS = 0;
+	int isVisited_forBFS = 0;
+};
 
-void dfs(int cur) {
-	visited1[cur] = 1;
-	cout << cur << ' ';
-	for (int i = 0; i < connection[cur].size();++i) {
-		int next = connection[cur][i];
-		if (!visited1[next]) dfs(next);
+node vertexes[1001];
+
+void DFS(int a)
+{
+	if (vertexes[a].isVisited_forDFS != 0) return;
+	cout << vertexes[a].num << ' ';
+	vertexes[a].isVisited_forDFS = 1;
+	for (int i = 0; i < vertexes[a].link.size(); ++i) {
+		int next = vertexes[a].link[i];
+		DFS(next);
 	}
 }
 
-void bfs(int v) {
-	q.push(v);
-	visited2[v] = 1;
-	while (!q.empty()) {
-		int cur = q.front();
-		q.pop();
-		cout << cur << ' ';
-		for (int i = 0; i < connection[cur].size(); ++i) {
-			int next = connection[cur][i];
-			if (!visited2[next]) {
-				visited2[next] = 1;
-				q.push(next);
-			}
-		}
+queue<int> bfs_Q;
+void BFS(int a) 
+{
+	if (vertexes[a].isVisited_forBFS == 0)
+	{
+		cout << vertexes[a].num << ' ';
+		vertexes[a].isVisited_forBFS = 1;
+		for (int i = 0; i < vertexes[a].link.size(); ++i) bfs_Q.push(vertexes[a].link[i]);
+	}
+
+	if (!bfs_Q.empty()) 
+	{
+		int next = bfs_Q.front();
+		bfs_Q.pop();
+		BFS(next);
 	}
 }
 
-int main() {
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL); cout.tie(NULL);
-
-	cin >> n >> m >> v;
-	for (int i = 0; i < m; ++i) {
+int main()
+{
+	int n, m, v; cin >> n >> m >> v;
+	for (int i = 0; i < m; ++i) 
+	{
 		int a, b; cin >> a >> b;
-		connection[a].push_back(b);
-		connection[b].push_back(a);
+		vertexes[a].link.push_back(b);
+		vertexes[b].link.push_back(a);
 	}
-	for (int i = 1; i <= n; ++i) {
-		sort(connection[i].begin(), connection[i].end());
-	}
-	dfs(v);
-	cout << '\n';
-	bfs(v);
 
-	return 0;
+	for (int i = 1; i <= n; ++i)
+	{
+		vertexes[i].num = i;
+		sort(vertexes[i].link.begin(), vertexes[i].link.end());
+	}
+
+	DFS(v);
+	cout << '\n';
+	BFS(v);
 }
